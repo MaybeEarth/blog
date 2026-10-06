@@ -53,6 +53,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Start S3 container
+        run: |
+          docker run -d --name s3 -p 9000:9000 -e RUSTFS_ACCESS_KEY=minioadmin -e RUSTFS_SECRET_KEY=change_me_minio -e RUSTFS_ADDRESS=:9000 rustfs/rustfs:latest
+
       - name: Setup Database & Prisma
         env:
           DATABASE_URL: postgresql://blog:change_me@localhost:5432/blog
