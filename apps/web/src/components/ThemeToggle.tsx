@@ -20,7 +20,8 @@ export function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    const isCurrentlyDark = document.documentElement.classList.contains('dark');
+    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
     setTheme(nextTheme);
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark');

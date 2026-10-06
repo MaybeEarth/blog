@@ -37,6 +37,23 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir="ltr" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const storedTheme = localStorage.getItem('theme');
+                const isDark = storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body
         className="min-h-screen bg-[#fafafa] font-sans text-slate-900 antialiased selection:bg-indigo-500/30 selection:text-white dark:bg-[#09090b] dark:text-[#f4f4f5] flex flex-col justify-between"
         suppressHydrationWarning
