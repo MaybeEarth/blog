@@ -36,8 +36,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir="ltr" className="scroll-smooth">
-      <body className="min-h-screen bg-[#fafafa] font-sans text-slate-900 antialiased selection:bg-indigo-500/30 selection:text-white dark:bg-[#09090b] dark:text-[#f4f4f5] flex flex-col justify-between">
+    <html lang={locale} dir="ltr" className="scroll-smooth" suppressHydrationWarning>
+      <body
+        className="min-h-screen bg-[#fafafa] font-sans text-slate-900 antialiased selection:bg-indigo-500/30 selection:text-white dark:bg-[#09090b] dark:text-[#f4f4f5] flex flex-col justify-between"
+        suppressHydrationWarning
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar locale={locale} />
           <main className="flex-1">{children}</main>

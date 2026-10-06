@@ -204,7 +204,7 @@ export default async function PostDetailPage({ params }: PostPageProps) {
             <span>•</span>
 
             {publishedDate && (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1" suppressHydrationWarning>
                 <Calendar className="w-3.5 h-3.5" />
                 <span>{publishedDate}</span>
               </span>
@@ -219,9 +219,9 @@ export default async function PostDetailPage({ params }: PostPageProps) {
 
             <span>•</span>
 
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1" suppressHydrationWarning>
               <Eye className="w-3.5 h-3.5" />
-              <span>{post.viewsCount.toLocaleString()} okunma</span>
+              <span>{post.viewsCount.toLocaleString(locale)} {locale === 'tr' ? 'okunma' : 'views'}</span>
             </span>
           </div>
 
@@ -231,7 +231,7 @@ export default async function PostDetailPage({ params }: PostPageProps) {
               <AudioPlayer title={post.title} locale={locale} />
             </div>
             <div>
-              <ShareButtons title={post.title} url={`/${locale}/posts/${post.slug}`} />
+              <ShareButtons title={post.title} url={`${siteUrl}/${locale}/posts/${post.slug}`} />
             </div>
           </div>
         </header>
@@ -269,7 +269,7 @@ export default async function PostDetailPage({ params }: PostPageProps) {
 
             {/* Bottom Share Bar */}
             <div className="flex items-center justify-between py-2">
-              <ShareButtons title={post.title} url={`/${locale}/posts/${post.slug}`} />
+              <ShareButtons title={post.title} url={`${siteUrl}/${locale}/posts/${post.slug}`} />
             </div>
 
             {/* Tags */}

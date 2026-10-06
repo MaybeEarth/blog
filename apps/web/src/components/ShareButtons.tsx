@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Share2, Link2, Check } from 'lucide-react';
 
 export interface ShareButtonsProps {
@@ -10,8 +10,13 @@ export interface ShareButtonsProps {
 
 export const ShareButtons: React.FC<ShareButtonsProps> = ({ title, url }) => {
   const [copied, setCopied] = useState(false);
+  const [fullUrl, setFullUrl] = useState(url);
 
-  const fullUrl = typeof window !== 'undefined' ? (url.startsWith('http') ? url : window.location.origin + url) : url;
+  useEffect(() => {
+    if (!url.startsWith('http') && typeof window !== 'undefined') {
+      setFullUrl(window.location.origin + url);
+    }
+  }, [url]);
 
   const handleCopy = async () => {
     try {

@@ -78,7 +78,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
         <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-[11px] text-slate-400 dark:border-white/[0.06] dark:text-zinc-500">
           <div className="flex items-center gap-3">
             {publishedDate && (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1" suppressHydrationWarning>
                 <Calendar className="w-3 h-3" />
                 <span>{publishedDate}</span>
               </span>
@@ -89,9 +89,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" suppressHydrationWarning>
             <Eye className="w-3 h-3" />
-            <span>{post.viewsCount.toLocaleString()}</span>
+            <span>{post.viewsCount.toLocaleString(locale)}</span>
           </div>
         </div>
       </div>

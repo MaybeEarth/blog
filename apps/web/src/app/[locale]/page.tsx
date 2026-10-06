@@ -64,7 +64,7 @@ export default async function HomePage({
                 <span>•</span>
                 <span>{featuredPost.readingTimeMin} {t('readTime')}</span>
                 <span>•</span>
-                <span>{featuredPost.viewsCount.toLocaleString()} {t('views')}</span>
+                <span suppressHydrationWarning>{featuredPost.viewsCount.toLocaleString(locale)} {t('views')}</span>
               </div>
 
               <div className="pt-2">
