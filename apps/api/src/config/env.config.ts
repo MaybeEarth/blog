@@ -13,6 +13,12 @@ export const envSchema = z.object({
   ADMIN_ORIGIN: z.string().default('http://localhost:5173'),
   DEFAULT_LOCALE: z.string().default('tr'),
   ENABLED_LOCALES: z.string().default('tr,en'),
+  S3_ENDPOINT: z.string().default('http://localhost:9000'),
+  S3_REGION: z.string().default('us-east-1'),
+  S3_ACCESS_KEY: z.string().default('minioadmin'),
+  S3_SECRET_KEY: z.string().default('change_me_minio'),
+  S3_BUCKET: z.string().default('media'),
+  S3_PUBLIC_URL: z.string().default('http://localhost:9000/media'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
