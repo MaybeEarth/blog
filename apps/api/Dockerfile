@@ -48,4 +48,4 @@ USER nestjs
 EXPOSE 3001
 
 WORKDIR /app/apps/api
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]

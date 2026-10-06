@@ -17,6 +17,9 @@
     "db:seed": "pnpm --filter @blog/api db:seed",
     "db:reset": "pnpm --filter @blog/api db:reset",
     "db:explain": "pnpm --filter @blog/api db:explain",
+    "benchmark": "node infra/scripts/benchmark.mjs",
+    "prod:up": "docker compose -f infra/docker-compose.prod.yml up -d",
+    "prod:down": "docker compose -f infra/docker-compose.prod.yml down",
     "format": "prettier --write ."
   },
   "devDependencies": {
