@@ -1,0 +1,46 @@
+{
+  "name": "blog",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.0.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "infra:up": "docker compose -f infra/docker-compose.dev.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.dev.yml down",
+    "db:migrate": "pnpm --filter @blog/api db:migrate",
+    "db:migrate:new": "pnpm --filter @blog/api db:migrate:new",
+    "db:seed": "pnpm --filter @blog/api db:seed",
+    "db:reset": "pnpm --filter @blog/api db:reset",
+    "db:explain": "pnpm --filter @blog/api db:explain",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.20.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.3.3",
+    "turbo": "^2.1.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.25.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp",
+      "@nestjs/core",
+      "@tailwindcss/oxide",
+      "unrs-resolver",
+      "argon2",
+      "msgpackr-extract"
+    ]
+  }
+}

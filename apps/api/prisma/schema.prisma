@@ -1,0 +1,417 @@
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Language {
+  code           String  @id
+  name           String
+  nativeName     String
+  direction      String  @default("ltr")
+  isDefault      Boolean @default(false)
+  isEnabled      Boolean @default(true)
+  sortOrder      Int     @default(0)
+  pgSearchConfig String  @default("simple")
+
+  userTranslations        UserTranslation[]
+  postTranslations        PostTranslation[]
+  categoryTranslations    CategoryTranslation[]
+  tagTranslations         TagTranslation[]
+  mediaTranslations       MediaTranslation[]
+  pageTranslations        PageTranslation[]
+  siteSettingTranslations SiteSettingTranslation[]
+  subscribers             Subscriber[]
+  redirects               Redirect[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("languages")
+}
+
+model User {
+  id                String    @id @default(uuid())
+  username          String    @unique
+  email             String    @unique
+  passwordHash      String
+  role              Role      @default(EDITOR)
+  displayName       String
+  avatarMediaId     String?
+  socialLinks       Json?
+  preferredUiLocale String    @default("tr")
+  isActive          Boolean   @default(true)
+  lastLoginAt       DateTime?
+
+  translations  UserTranslation[]
+  refreshTokens RefreshToken[]
+  posts         Post[]
+  revisions     PostRevision[]
+  media         Media[]
+  auditLogs     AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model UserTranslation {
+  userId String
+  locale String
+  bio    String?
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [locale], references: [code], onDelete: Cascade)
+
+  @@id([userId, locale])
+  @@map("user_translations")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  familyId   String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  replacedBy String?
+  userAgent  String?
+  ip         String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  authorId     String
+  coverMediaId String?
+  featured     Boolean    @default(false)
+  status       PostStatus @default(DRAFT)
+  viewsCount   Int        @default(0)
+  publishedAt  DateTime?
+  scheduledAt  DateTime?
+
+  author       User              @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  coverMedia   Media?            @relation("CoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  translations PostTranslation[]
+  categories   PostCategory[]
+  tags         PostTag[]
+  viewsDaily   PostViewsDaily[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([authorId, publishedAt(sort: Desc)])
+  @@map("posts")
+}
+
+model PostTranslation {
+  id              String     @id @default(uuid())
+  postId          String
+  locale          String
+  title           String
+  slug            String
+  excerpt         String?
+  contentJson     Json?
+  contentHtml     String     @db.Text
+  readingTimeMin  Int        @default(1)
+  status          PostStatus @default(DRAFT)
+  metaTitle       String?
+  metaDescription String?
+  ogMediaId       String?
+  canonicalUrl    String?
+  noindex         Boolean    @default(false)
+  publishedAt     DateTime?
+
+  post      Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  language  Language       @relation(fields: [locale], references: [code], onDelete: Restrict)
+  ogMedia   Media?         @relation("OgMedia", fields: [ogMediaId], references: [id], onDelete: SetNull)
+  revisions PostRevision[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, slug])
+  @@unique([postId, locale])
+  @@index([locale, publishedAt(sort: Desc), id(sort: Desc)])
+  @@index([postId])
+  @@map("post_translations")
+}
+
+model PostRevision {
+  id                String   @id @default(uuid())
+  postTranslationId String
+  editorId          String
+  title             String
+  contentJson       Json
+
+  postTranslation PostTranslation @relation(fields: [postTranslationId], references: [id], onDelete: Cascade)
+  editor          User            @relation(fields: [editorId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([postTranslationId, createdAt(sort: Desc)])
+  @@map("post_revisions")
+}
+
+model Category {
+  id        String  @id @default(uuid())
+  parentId  String?
+  sortOrder Int     @default(0)
+  postCount Int     @default(0)
+
+  parent       Category?             @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Category[]            @relation("CategoryHierarchy")
+  translations CategoryTranslation[]
+  posts        PostCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model CategoryTranslation {
+  categoryId  String
+  locale      String
+  name        String
+  slug        String
+  description String?
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@id([categoryId, locale])
+  @@unique([locale, slug])
+  @@map("category_translations")
+}
+
+model Tag {
+  id        String @id @default(uuid())
+  postCount Int    @default(0)
+
+  translations TagTranslation[]
+  posts        PostTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model TagTranslation {
+  tagId  String
+  locale String
+  name   String
+  slug   String
+
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@id([tagId, locale])
+  @@unique([locale, slug])
+  @@map("tag_translations")
+}
+
+model PostCategory {
+  postId     String
+  categoryId String
+
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([postId, categoryId])
+  @@index([categoryId, postId])
+  @@map("post_categories")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId, postId])
+  @@map("post_tags")
+}
+
+model Media {
+  id         String      @id @default(uuid())
+  uploaderId String
+  storageKey String      @unique
+  mime       String
+  sizeBytes  Int
+  width      Int?
+  height     Int?
+  blurhash   String?
+  variants   Json?
+  status     MediaStatus @default(READY)
+
+  uploader             User               @relation(fields: [uploaderId], references: [id], onDelete: Restrict)
+  translations         MediaTranslation[]
+  postsAsCover         Post[]             @relation("CoverMedia")
+  postTranslationsAsOg PostTranslation[]  @relation("OgMedia")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("media")
+}
+
+model MediaTranslation {
+  mediaId String
+  locale  String
+  altText String?
+  caption String?
+
+  media    Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@id([mediaId, locale])
+  @@map("media_translations")
+}
+
+model Page {
+  id     String     @id @default(uuid())
+  status PageStatus @default(DRAFT)
+
+  translations PageTranslation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pages")
+}
+
+model PageTranslation {
+  pageId          String
+  locale          String
+  title           String
+  slug            String
+  contentJson     Json?
+  contentHtml     String  @db.Text
+  metaTitle       String?
+  metaDescription String?
+
+  page     Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@id([pageId, locale])
+  @@unique([locale, slug])
+  @@map("page_translations")
+}
+
+model Redirect {
+  id         String   @id @default(uuid())
+  locale     String
+  fromPath   String
+  toPath     String
+  statusCode Int      @default(301)
+  createdAt  DateTime @default(now())
+
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@unique([locale, fromPath])
+  @@map("redirects")
+}
+
+model PostViewsDaily {
+  postId      String
+  day         DateTime @db.Date
+  views       Int      @default(0)
+  uniqueViews Int      @default(0)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([postId, day])
+  @@index([day(sort: Desc)])
+  @@map("post_views_daily")
+}
+
+model SiteSetting {
+  id           String                   @id @default(uuid())
+  key          String                   @unique
+  value        Json?
+  translations SiteSettingTranslation[]
+
+  @@map("site_settings")
+}
+
+model SiteSettingTranslation {
+  settingId String
+  locale    String
+  value     String
+
+  setting  SiteSetting @relation(fields: [settingId], references: [id], onDelete: Cascade)
+  language Language    @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@id([settingId, locale])
+  @@map("site_setting_translations")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  diff      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
+model Subscriber {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  locale      String    @default("tr")
+  confirmedAt DateTime?
+  token       String?
+  createdAt   DateTime  @default(now())
+
+  language Language @relation(fields: [locale], references: [code], onDelete: Restrict)
+
+  @@map("subscribers")
+}
