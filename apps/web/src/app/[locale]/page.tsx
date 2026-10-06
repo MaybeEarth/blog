@@ -36,31 +36,31 @@ export default async function HomePage({
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 space-y-12">
       {/* Hero Section / Featured Post */}
       {featuredPost && !cursor && !category && (
-        <section className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-xl">
+        <section className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-white/[0.08] dark:bg-[#121215] shadow-xl dark:shadow-[0_8px_30px_rgb(0,0,0,0.45)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 sm:p-10 items-center">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100/80 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-300 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                 <span>{t('featured')}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-[#f4f4f5] leading-tight">
                 <Link
                   href={`/posts/${featuredPost.slug}`}
-                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  className="hover:text-indigo-600 dark:hover:text-white transition-colors"
                 >
                   {featuredPost.title}
                 </Link>
               </h1>
 
               {featuredPost.excerpt && (
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-[#a1a1aa] line-clamp-3 leading-relaxed font-normal">
                   {featuredPost.excerpt}
                 </p>
               )}
 
-              <div className="flex items-center gap-4 pt-2 text-xs text-slate-400">
-                <span>{featuredPost.categories[0]?.name}</span>
+              <div className="flex items-center gap-3 pt-2 text-xs text-slate-400 dark:text-zinc-500 font-medium">
+                <span className="text-slate-600 dark:text-zinc-400">{featuredPost.categories[0]?.name}</span>
                 <span>•</span>
                 <span>{featuredPost.readingTimeMin} {t('readTime')}</span>
                 <span>•</span>
@@ -70,7 +70,7 @@ export default async function HomePage({
               <div className="pt-2">
                 <Link
                   href={`/posts/${featuredPost.slug}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-xs hover:bg-indigo-500 hover:shadow-[0_0_20px_-3px_rgba(79,70,229,0.35)] transition-all duration-200"
                 >
                   <span>Makaleyi Oku</span>
                   <ArrowRight className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default async function HomePage({
               </div>
             </div>
 
-            <div className="relative aspect-video lg:aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+            <div className="relative aspect-video lg:aspect-square w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-[#18181b] border border-slate-200/60 dark:border-white/[0.04]">
               {featuredPost.coverMedia ? (
                 <Image
                   src={`http://localhost:9000/media/${featuredPost.coverMedia.storageKey}`}
@@ -91,9 +91,9 @@ export default async function HomePage({
                   placeholder={featuredPost.coverMedia.blurhash ? 'blur' : 'empty'}
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20">
-                  <span className="text-2xl font-bold text-slate-300 dark:text-slate-700">
-                    TechBlog
+                <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-[#18181b] p-6 text-center">
+                  <span className="font-mono text-xs uppercase tracking-widest text-slate-400 dark:text-zinc-500 font-medium">
+                    TechBlog // Editorial
                   </span>
                 </div>
               )}
@@ -110,8 +110,8 @@ export default async function HomePage({
               href="/"
               className={`rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                 !category
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                  ? 'bg-indigo-600 text-white shadow-xs dark:bg-white/[0.1] dark:text-zinc-100 dark:border dark:border-white/15'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-white/[0.03] dark:text-zinc-400 dark:hover:bg-white/[0.07] dark:hover:text-zinc-200 border border-slate-200 dark:border-white/[0.06]'
               }`}
             >
               {t('allPosts')}
@@ -122,8 +122,8 @@ export default async function HomePage({
                 href={`/?category=${cat.slug}`}
                 className={`rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                   category === cat.slug
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                    ? 'bg-indigo-600 text-white shadow-xs dark:bg-white/[0.1] dark:text-zinc-100 dark:border dark:border-white/15'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-white/[0.03] dark:text-zinc-400 dark:hover:bg-white/[0.07] dark:hover:text-zinc-200 border border-slate-200 dark:border-white/[0.06]'
                 }`}
               >
                 {cat.name} ({cat.postCount})
@@ -135,19 +135,19 @@ export default async function HomePage({
 
       {/* Articles Grid */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4 dark:border-slate-800">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4 dark:border-white/[0.08]">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-[#f4f4f5]">
             {category
               ? `Kategori: ${categories.find((c) => c.slug === category)?.name || category}`
               : t('allPosts')}
           </h2>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-400 dark:text-zinc-500">
             {posts.length} makale listelendi
           </span>
         </div>
 
         {regularPosts.length === 0 ? (
-          <div className="py-20 text-center text-sm text-slate-500 dark:text-slate-400">
+          <div className="py-20 text-center text-sm text-slate-500 dark:text-zinc-400">
             {t('noPostsFound')}
           </div>
         ) : (
@@ -165,7 +165,7 @@ export default async function HomePage({
               href={`/?cursor=${postsResponse.nextCursor}${
                 category ? `&category=${category}` : ''
               }`}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 shadow-xs"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121215] dark:text-zinc-300 dark:hover:bg-[#18181b] dark:hover:text-white shadow-xs transition-colors"
             >
               <span>{t('loadMore')}</span>
               <ArrowRight className="w-3.5 h-3.5" />

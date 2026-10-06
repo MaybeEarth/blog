@@ -33,7 +33,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="h-8 w-8 rounded-xl border border-slate-200 dark:border-slate-800" />
+      <div className="h-8 w-8 rounded-xl border border-slate-200 dark:border-white/[0.08]" />
     );
   }
 
@@ -41,11 +41,11 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       title={theme === 'light' ? 'Karanlık moda geç' : 'Aydınlık moda geç'}
-      className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
+      className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-white/[0.08] dark:bg-[#121215] dark:text-zinc-300 dark:hover:bg-[#18181b] dark:hover:text-[#f4f4f5] transition-colors"
       aria-label="Toggle Theme"
     >
       {theme === 'light' ? (
-        <Moon className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+        <Moon className="w-4 h-4 text-slate-600 dark:text-zinc-300" />
       ) : (
         <Sun className="w-4 h-4 text-amber-400" />
       )}

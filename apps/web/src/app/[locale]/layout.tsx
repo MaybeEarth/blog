@@ -37,7 +37,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir="ltr" className="scroll-smooth">
-      <body className="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased selection:bg-indigo-500 selection:text-white dark:bg-slate-950 dark:text-slate-100 flex flex-col justify-between">
+      <body className="min-h-screen bg-[#fafafa] font-sans text-slate-900 antialiased selection:bg-indigo-500/30 selection:text-white dark:bg-[#09090b] dark:text-[#f4f4f5] flex flex-col justify-between">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar locale={locale} />
           <main className="flex-1">{children}</main>

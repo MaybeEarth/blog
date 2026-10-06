@@ -18,9 +18,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
     : null;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:border-slate-300 hover:shadow-xl dark:border-white/[0.08] dark:bg-[#121215] dark:hover:border-white/[0.18] hover:-translate-y-0.5 dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
       {/* Cover Image / Thumbnail */}
-      <Link href={`/posts/${post.slug}`} className="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <Link href={`/posts/${post.slug}`} className="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-[#18181b] border-b border-slate-200/60 dark:border-white/[0.04]">
         {post.coverMedia ? (
           <Image
             src={`http://localhost:9000/media/${post.coverMedia.storageKey}`}
@@ -32,15 +32,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
             placeholder={post.coverMedia.blurhash ? 'blur' : 'empty'}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 p-6 text-center">
-            <span className="text-sm font-semibold text-slate-400 group-hover:text-indigo-500 transition-colors">
+          <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-[#18181b] p-6 text-center">
+            <span className="font-mono text-xs text-slate-400 dark:text-zinc-500 group-hover:text-zinc-400 transition-colors">
               {post.categories[0]?.name || 'Teknoloji'}
             </span>
           </div>
         )}
 
         {post.featured && (
-          <div className="absolute top-3 left-3 rounded-full bg-indigo-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-md">
+          <div className="absolute top-3 left-3 rounded-full border border-white/15 bg-black/60 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-medium tracking-wide text-zinc-300">
             Öne Çıkan
           </div>
         )}
@@ -54,7 +54,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
             {post.categories.slice(0, 2).map((cat) => (
               <span
                 key={cat.id}
-                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400"
+                className="text-xs font-medium text-indigo-600 dark:text-indigo-400/90"
               >
                 {cat.name}
               </span>
@@ -63,19 +63,19 @@ export const PostCard: React.FC<PostCardProps> = ({ post, locale }) => {
         )}
 
         {/* Title */}
-        <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+        <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 dark:text-[#f4f4f5] dark:group-hover:text-white transition-colors line-clamp-2">
           <Link href={`/posts/${post.slug}`}>{post.title}</Link>
         </h3>
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+          <p className="mt-2 text-xs text-slate-500 dark:text-[#a1a1aa] line-clamp-2 leading-relaxed font-normal">
             {post.excerpt}
           </p>
         )}
 
         {/* Footer info */}
-        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-[11px] text-slate-400 dark:border-slate-800/80">
+        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-[11px] text-slate-400 dark:border-white/[0.06] dark:text-zinc-500">
           <div className="flex items-center gap-3">
             {publishedDate && (
               <span className="flex items-center gap-1">
