@@ -21,10 +21,10 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
+          --health-cmd "pg_isready -U blog -d blog"
+          --health-interval 5s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
 
       redis:
         image: redis:7-alpine
@@ -59,7 +59,7 @@ jobs:
           DIRECT_URL: postgresql://blog:change_me@localhost:5432/blog
         run: |
           pnpm --filter @blog/api prisma:generate
-          pnpm --filter @blog/api prisma db push --skip-generate
+          pnpm --filter @blog/api exec prisma db push --skip-generate
 
       - name: Lint
         run: pnpm lint
