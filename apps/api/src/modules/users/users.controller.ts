@@ -24,10 +24,9 @@ export class UsersController {
 
   @Patch(':id')
   @Roles(Role.ADMIN, Role.EDITOR)
-  @UsePipes(new ZodValidationPipe(updateUserProfileSchema))
   async update(
     @Param('id') id: string,
-    @Body() dto: UpdateUserProfileInput,
+    @Body(new ZodValidationPipe(updateUserProfileSchema)) dto: UpdateUserProfileInput,
     @CurrentUser() actor: JwtPayload,
   ) {
     return this.usersService.update(id, dto, actor);

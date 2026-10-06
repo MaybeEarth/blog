@@ -7,6 +7,12 @@ import { PrismaModule } from './infra/prisma/prisma.module';
 import { RedisModule } from './infra/redis/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { LanguagesModule } from './modules/languages/languages.module';
+import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
+import { PostsModule } from './modules/posts/posts.module';
+import { SearchModule } from './modules/search/search.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { RedirectsModule } from './modules/redirects/redirects.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -21,14 +27,20 @@ import { AppService } from './app.service';
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 dakika
-        limit: 100, // 100 istek
+        ttl: 60000,
+        limit: 100,
       },
     ]),
     PrismaModule,
     RedisModule,
     AuthModule,
     UsersModule,
+    LanguagesModule,
+    TaxonomyModule,
+    PostsModule,
+    SearchModule,
+    AnalyticsModule,
+    RedirectsModule,
   ],
   controllers: [AppController],
   providers: [
