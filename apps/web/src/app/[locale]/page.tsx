@@ -5,6 +5,7 @@ import { PostCard } from '../../components/PostCard';
 import { Link } from '../../i18n/routing';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { NewsletterForm } from '../../components/NewsletterForm';
 
 export default async function HomePage({
   params,
@@ -171,6 +172,11 @@ export default async function HomePage({
             </Link>
           </div>
         )}
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="pt-6">
+        <NewsletterForm />
       </section>
     </div>
   );

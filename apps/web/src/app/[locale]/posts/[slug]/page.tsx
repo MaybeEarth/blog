@@ -8,6 +8,7 @@ import { PostCard } from '../../../../components/PostCard';
 import { Link } from '../../../../i18n/routing';
 import { Clock, Eye, Calendar, Tag, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
+import { NewsletterForm } from '../../../../components/NewsletterForm';
 
 interface PostPageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -266,6 +267,11 @@ export default async function PostDetailPage({ params }: PostPageProps) {
             </div>
           </section>
         )}
+
+        {/* Newsletter Callout */}
+        <div className="pt-10 border-t border-slate-200 dark:border-slate-800">
+          <NewsletterForm />
+        </div>
       </article>
     </>
   );

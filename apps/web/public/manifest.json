@@ -1,0 +1,17 @@
+{
+  "name": "High Performance Tech Blog",
+  "short_name": "TechBlog",
+  "description": "Ultra-Fast, Multilingual Technical Blog Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

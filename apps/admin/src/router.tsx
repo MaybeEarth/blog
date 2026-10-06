@@ -13,6 +13,7 @@ import { PostEditPage } from './pages/PostEditPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { TagsPage } from './pages/TagsPage';
 import { MediaPage } from './pages/MediaPage';
+import { SubscribersPage } from './pages/SubscribersPage';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute: React.FC = () => {
@@ -79,6 +80,10 @@ export const router = createBrowserRouter([
           {
             path: 'media',
             element: <MediaPage />,
+          },
+          {
+            path: 'subscribers',
+            element: <SubscribersPage />,
           },
         ],
       },

@@ -6,6 +6,7 @@ import {
   FolderTree,
   Tags,
   Image,
+  Mail,
   Globe,
   ChevronLeft,
   ChevronRight,
@@ -21,6 +22,7 @@ export const Sidebar: React.FC = () => {
     { name: 'Kategoriler', href: '/categories', icon: FolderTree },
     { name: 'Etiketler', href: '/tags', icon: Tags },
     { name: 'Medya Kütüphanesi', href: '/media', icon: Image },
+    { name: 'Bülten Aboneleri', href: '/subscribers', icon: Mail },
   ];
 
   return (

@@ -15,6 +15,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { RedirectsModule } from './modules/redirects/redirects.module';
 import { S3Module } from './infra/s3/s3.module';
 import { MediaModule } from './modules/media/media.module';
+import { NewsletterModule } from './modules/newsletter/newsletter.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -45,6 +46,7 @@ import { AppService } from './app.service';
     AnalyticsModule,
     RedirectsModule,
     MediaModule,
+    NewsletterModule,
   ],
   controllers: [AppController],
   providers: [

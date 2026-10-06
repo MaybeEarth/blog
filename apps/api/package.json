@@ -11,7 +11,7 @@
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "test": "ts-node -r tsconfig-paths/register src/app.controller.spec.ts && ts-node -r tsconfig-paths/register test/auth.integration.test.ts && ts-node -r tsconfig-paths/register test/posts-and-search.integration.test.ts && ts-node -r tsconfig-paths/register test/media.integration.test.ts",
+    "test": "ts-node -r tsconfig-paths/register src/app.controller.spec.ts && ts-node -r tsconfig-paths/register test/auth.integration.test.ts && ts-node -r tsconfig-paths/register test/posts-and-search.integration.test.ts && ts-node -r tsconfig-paths/register test/media.integration.test.ts && ts-node -r tsconfig-paths/register test/newsletter.integration.test.ts",
     "prisma:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
