@@ -60,6 +60,37 @@ export class PostsController {
     return this.postsService.findRelated(locale, slug, limit ? Number(limit) : 4);
   }
 
+  @Public()
+  @Get(':locale/:slug/reactions')
+  async getReactions(
+    @Param('locale') locale: string,
+    @Param('slug') slug: string,
+    @Query('sessionId') sessionId?: string,
+  ) {
+    return this.postsService.getReactions(locale, slug, sessionId);
+  }
+
+  @Public()
+  @Post(':locale/:slug/reactions')
+  async addReaction(
+    @Param('locale') locale: string,
+    @Param('slug') slug: string,
+    @Body()
+    body: {
+      type: 'CLAP' | 'HEART' | 'ROCKET' | 'BULB';
+      count?: number;
+      sessionId?: string;
+    },
+  ) {
+    return this.postsService.addReaction(
+      locale,
+      slug,
+      body.type,
+      body.count,
+      body.sessionId,
+    );
+  }
+
   @Post()
   @Roles(Role.ADMIN, Role.EDITOR)
   async createPost(

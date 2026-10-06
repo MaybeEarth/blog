@@ -1,6 +1,7 @@
 import {
   Injectable,
   NotFoundException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../infra/prisma/prisma.service';
@@ -661,5 +662,69 @@ export class PostsService {
       excerpt: translatedExcerpt,
       contentHtml: translatedContent,
     };
+  }
+
+  /**
+   * Post Reaksiyon ve Alkış Durumu
+   */
+  async getReactions(locale: string, slug: string, sessionId?: string) {
+    const post = await this.findBySlug(locale, slug);
+    const key = `post:reactions:${post.postId}`;
+    const raw = await this.redis.cacheClient.hgetall(key);
+    const counts = {
+      CLAP: parseInt(raw?.CLAP || '0', 10),
+      HEART: parseInt(raw?.HEART || '0', 10),
+      ROCKET: parseInt(raw?.ROCKET || '0', 10),
+      BULB: parseInt(raw?.BULB || '0', 10),
+    };
+
+    let userCounts: Record<string, number> = {};
+    if (sessionId) {
+      const sessionKey = `post:reactions:user:${post.postId}:${sessionId}`;
+      const userRaw = await this.redis.cacheClient.hgetall(sessionKey);
+      userCounts = {
+        CLAP: parseInt(userRaw?.CLAP || '0', 10),
+        HEART: parseInt(userRaw?.HEART || '0', 10),
+        ROCKET: parseInt(userRaw?.ROCKET || '0', 10),
+        BULB: parseInt(userRaw?.BULB || '0', 10),
+      };
+    }
+
+    return { counts, userCounts };
+  }
+
+  /**
+   * Reaksiyon / Alkış Ekleme
+   */
+  async addReaction(
+    locale: string,
+    slug: string,
+    type: 'CLAP' | 'HEART' | 'ROCKET' | 'BULB',
+    count = 1,
+    sessionId?: string,
+  ) {
+    const post = await this.findBySlug(locale, slug);
+    const validTypes = ['CLAP', 'HEART', 'ROCKET', 'BULB'];
+    if (!validTypes.includes(type)) {
+      throw new BadRequestException('Geçersiz reaksiyon türü');
+    }
+
+    const safeCount = Math.min(Math.max(1, count), 10);
+    if (sessionId) {
+      const sessionKey = `post:reactions:user:${post.postId}:${sessionId}`;
+      const current = parseInt((await this.redis.cacheClient.hget(sessionKey, type)) || '0', 10);
+      const maxLimit = type === 'CLAP' ? 50 : 1;
+      if (current >= maxLimit) {
+        return this.getReactions(locale, slug, sessionId);
+      }
+      const allowedAdd = Math.min(safeCount, maxLimit - current);
+      await this.redis.cacheClient.hincrby(sessionKey, type, allowedAdd);
+      await this.redis.cacheClient.expire(sessionKey, 86400 * 30);
+      await this.redis.cacheClient.hincrby(`post:reactions:${post.postId}`, type, allowedAdd);
+    } else {
+      await this.redis.cacheClient.hincrby(`post:reactions:${post.postId}`, type, safeCount);
+    }
+
+    return this.getReactions(locale, slug, sessionId);
   }
 }

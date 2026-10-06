@@ -9,6 +9,12 @@ import { Link } from '../../../../i18n/routing';
 import { Clock, Eye, Calendar, Tag, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { NewsletterForm } from '../../../../components/NewsletterForm';
+import { ReadingProgress } from '../../../../components/ReadingProgress';
+import { TableOfContents } from '../../../../components/TableOfContents';
+import { PostReactions } from '../../../../components/PostReactions';
+import { ShareButtons } from '../../../../components/ShareButtons';
+import { AudioPlayer } from '../../../../components/AudioPlayer';
+import { CodeBlockEnhancer } from '../../../../components/CodeBlockEnhancer';
 
 interface PostPageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -123,10 +129,16 @@ export default async function PostDetailPage({ params }: PostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* Reading Progress Bar */}
+      <ReadingProgress />
+
+      {/* Code Block Copy Button Enhancer */}
+      <CodeBlockEnhancer />
+
       {/* Analytics View Beacon */}
       <ViewBeacon postId={post.postId} locale={locale} />
 
-      <article className="mx-auto max-w-4xl px-4 sm:px-6 py-10 space-y-10">
+      <article className="mx-auto max-w-6xl px-4 sm:px-6 py-10 space-y-10">
         {/* Back Link & Alternates Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-slate-500 dark:text-zinc-400">
           <Link
@@ -155,7 +167,7 @@ export default async function PostDetailPage({ params }: PostPageProps) {
         </div>
 
         {/* Header */}
-        <header className="space-y-4">
+        <header className="space-y-4 max-w-4xl">
           {post.categories.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.categories.map((c) => (
@@ -212,47 +224,78 @@ export default async function PostDetailPage({ params }: PostPageProps) {
               <span>{post.viewsCount.toLocaleString()} okunma</span>
             </span>
           </div>
-        </header>
 
-        {/* Cover Image */}
-        {post.coverMedia && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#18181b] border border-slate-200/80 dark:border-white/[0.08] shadow-md">
-            <Image
-              src={`http://localhost:9000/media/${post.coverMedia.storageKey}`}
-              alt={post.title}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 900px"
-              className="object-cover"
-              blurDataURL={post.coverMedia.blurhash || undefined}
-              placeholder={post.coverMedia.blurhash ? 'blur' : 'empty'}
-            />
-          </div>
-        )}
-
-        {/* Main Article Content */}
-        <div
-          className="prose prose-slate dark:prose-invert max-w-none text-base leading-relaxed sm:text-lg prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-[#f4f4f5] prose-p:text-slate-700 dark:prose-p:text-zinc-300 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 dark:prose-strong:text-white dark:prose-code:text-zinc-200 prose-img:rounded-2xl"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
-
-        {/* Tags */}
-        {post.tags.length > 0 && (
-          <div className="pt-6 border-t border-slate-200 dark:border-white/[0.08] space-y-2">
-            <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">Etiketler:</span>
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((t) => (
-                <span
-                  key={t.id}
-                  className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-[#121215] dark:border dark:border-white/[0.08] dark:text-zinc-300 transition-colors"
-                >
-                  <Tag className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
-                  <span>#{t.name}</span>
-                </span>
-              ))}
+          {/* Audio Player & Top Share Bar */}
+          <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex-1 max-w-md">
+              <AudioPlayer title={post.title} locale={locale} />
+            </div>
+            <div>
+              <ShareButtons title={post.title} url={`/${locale}/posts/${post.slug}`} />
             </div>
           </div>
-        )}
+        </header>
+
+        {/* Content Layout with Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Main Article Column */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Cover Image */}
+            {post.coverMedia && (
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#18181b] border border-slate-200/80 dark:border-white/[0.08] shadow-md">
+                <Image
+                  src={`http://localhost:9000/media/${post.coverMedia.storageKey}`}
+                  alt={post.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 800px"
+                  className="object-cover"
+                  blurDataURL={post.coverMedia.blurhash || undefined}
+                  placeholder={post.coverMedia.blurhash ? 'blur' : 'empty'}
+                />
+              </div>
+            )}
+
+            {/* Main Article Content */}
+            <div
+              className="prose prose-slate dark:prose-invert max-w-none text-base leading-relaxed sm:text-lg prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-[#f4f4f5] prose-p:text-slate-700 dark:prose-p:text-zinc-300 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 dark:prose-strong:text-white dark:prose-code:text-zinc-200 prose-img:rounded-2xl"
+              dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+            />
+
+            {/* Interactive Claps & Reactions */}
+            <div className="pt-4">
+              <PostReactions locale={locale} slug={post.slug} />
+            </div>
+
+            {/* Bottom Share Bar */}
+            <div className="flex items-center justify-between py-2">
+              <ShareButtons title={post.title} url={`/${locale}/posts/${post.slug}`} />
+            </div>
+
+            {/* Tags */}
+            {post.tags.length > 0 && (
+              <div className="pt-6 border-t border-slate-200 dark:border-white/[0.08] space-y-2">
+                <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">Etiketler:</span>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((t) => (
+                    <span
+                      key={t.id}
+                      className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-[#121215] dark:border dark:border-white/[0.08] dark:text-zinc-300 transition-colors"
+                    >
+                      <Tag className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
+                      <span>#{t.name}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sticky Table of Contents Sidebar */}
+          <aside className="hidden lg:block lg:col-span-4 sticky top-24 space-y-6">
+            <TableOfContents contentHtml={post.contentHtml} />
+          </aside>
+        </div>
 
         {/* Related Posts */}
         {relatedPosts.length > 0 && (

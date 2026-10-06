@@ -166,4 +166,38 @@ export const webApi = {
       next: { tags: [`pages:${locale}:${slug}`], revalidate: 3600 },
     });
   },
+
+  getReactions: async (locale: string, slug: string, sessionId?: string) => {
+    return (
+      (await fetchApi<{
+        counts: { CLAP: number; HEART: number; ROCKET: number; BULB: number };
+        userCounts: { CLAP?: number; HEART?: number; ROCKET?: number; BULB?: number };
+      }>(
+        `/posts/${locale}/${slug}/reactions${sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : ''}`,
+        { cache: 'no-store' },
+      )) || {
+        counts: { CLAP: 0, HEART: 0, ROCKET: 0, BULB: 0 },
+        userCounts: {},
+      }
+    );
+  },
+
+  addReaction: async (
+    locale: string,
+    slug: string,
+    type: 'CLAP' | 'HEART' | 'ROCKET' | 'BULB',
+    count = 1,
+    sessionId?: string,
+  ) => {
+    try {
+      const res = await fetch(`${API_BASE}/posts/${locale}/${slug}/reactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, count, sessionId }),
+      });
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };
