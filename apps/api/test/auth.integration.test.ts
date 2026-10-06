@@ -27,6 +27,21 @@ before(async () => {
 
   prisma = app.get(PrismaService);
 
+  // Test için Admin kullanıcısı hazırla
+  const adminPasswordHash = await argon2.hash('Admin!12345');
+  await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: { passwordHash: adminPasswordHash, role: Role.ADMIN },
+    create: {
+      username: 'admin',
+      email: 'admin@example.com',
+      passwordHash: adminPasswordHash,
+      role: Role.ADMIN,
+      displayName: 'Sistem Yöneticisi',
+      preferredUiLocale: 'tr',
+    },
+  });
+
   // Test için Editor kullanıcısı hazırla
   const editorPasswordHash = await argon2.hash('Editor!12345');
   await prisma.user.upsert({

@@ -57,9 +57,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://blog:change_me@localhost:5432/blog
           DIRECT_URL: postgresql://blog:change_me@localhost:5432/blog
+          SEED_POSTS_PER_LOCALE: 10
         run: |
           pnpm --filter @blog/api prisma:generate
           pnpm --filter @blog/api exec prisma db push --skip-generate
+          pnpm --filter @blog/api db:seed
 
       - name: Lint
         run: pnpm lint
