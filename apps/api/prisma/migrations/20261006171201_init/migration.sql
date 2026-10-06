@@ -1,3 +1,6 @@
+-- Enable Extensions
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'EDITOR');
 
