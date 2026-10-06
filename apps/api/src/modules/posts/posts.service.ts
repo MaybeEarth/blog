@@ -407,18 +407,34 @@ export class PostsService {
       where: { postId_locale: { postId, locale } },
     });
 
-    if (existing && existing.slug !== finalSlug) {
-      await this.prisma.redirect.upsert({
-        where: { locale_fromPath: { locale, fromPath: `/posts/${existing.slug}` } },
-        update: { toPath: `/posts/${finalSlug}`, statusCode: 301 },
-        create: {
-          locale,
-          fromPath: `/posts/${existing.slug}`,
-          toPath: `/posts/${finalSlug}`,
-          statusCode: 301,
+    if (existing) {
+      // Önceki versiyonu revizyon tablosuna arşivle
+      await this.prisma.postRevision.create({
+        data: {
+          postTranslationId: existing.id,
+          editorId: post.authorId,
+          title: existing.title,
+          contentJson: {
+            html: existing.contentHtml,
+            excerpt: existing.excerpt,
+            json: existing.contentJson,
+          } as Prisma.InputJsonValue,
         },
       });
-      await this.redis.del(`redirect:${locale}:/posts/${existing.slug}`);
+
+      if (existing.slug !== finalSlug) {
+        await this.prisma.redirect.upsert({
+          where: { locale_fromPath: { locale, fromPath: `/posts/${existing.slug}` } },
+          update: { toPath: `/posts/${finalSlug}`, statusCode: 301 },
+          create: {
+            locale,
+            fromPath: `/posts/${existing.slug}`,
+            toPath: `/posts/${finalSlug}`,
+            statusCode: 301,
+          },
+        });
+        await this.redis.del(`redirect:${locale}:/posts/${existing.slug}`);
+      }
     }
 
     const translation = await this.prisma.postTranslation.upsert({
@@ -521,5 +537,129 @@ export class PostsService {
     await this.redis.invalidateTag(`post:${postId}`);
     await this.redis.invalidateTag(`posts:${locale}`);
     await this.redis.invalidateTag('posts:list');
+  }
+
+  async getRevisions(postId: string, locale: string) {
+    const translation = await this.prisma.postTranslation.findUnique({
+      where: { postId_locale: { postId, locale } },
+    });
+    if (!translation) return [];
+
+    return this.prisma.postRevision.findMany({
+      where: { postTranslationId: translation.id },
+      include: {
+        editor: {
+          select: {
+            id: true,
+            displayName: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+  }
+
+  async rollbackRevision(
+    postId: string,
+    locale: string,
+    revisionId: string,
+    editorId: string,
+  ) {
+    const translation = await this.prisma.postTranslation.findUnique({
+      where: { postId_locale: { postId, locale } },
+    });
+    if (!translation) throw new NotFoundException('Çeviri bulunamadı');
+
+    const revision = await this.prisma.postRevision.findUnique({
+      where: { id: revisionId },
+    });
+    if (!revision || revision.postTranslationId !== translation.id) {
+      throw new NotFoundException('Revizyon bulunamadı');
+    }
+
+    // Mevcut durumu da yeni bir revizyon olarak sakla
+    await this.prisma.postRevision.create({
+      data: {
+        postTranslationId: translation.id,
+        editorId,
+        title: translation.title,
+        contentJson: {
+          html: translation.contentHtml,
+          excerpt: translation.excerpt,
+          json: translation.contentJson,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    const revContent = revision.contentJson as { html?: string; excerpt?: string };
+    const restoredHtml = revContent?.html || '';
+    const wordCount = restoredHtml.replace(/<[^>]*>/g, '').trim().split(/\s+/).length;
+
+    await this.prisma.postTranslation.update({
+      where: { id: translation.id },
+      data: {
+        title: revision.title,
+        contentHtml: restoredHtml,
+        excerpt: revContent?.excerpt ?? null,
+        readingTimeMin: Math.max(1, Math.ceil(wordCount / 200)),
+      },
+    });
+
+    await this.invalidatePostCache(postId, locale);
+    return { success: true, message: 'Revizyon başarıyla geri yüklendi.' };
+  }
+
+  async translateDraft(data: {
+    title: string;
+    excerpt?: string;
+    contentHtml: string;
+    from: string;
+    to: string;
+  }) {
+    const dictionary: Record<string, string> = {
+      'Modern Web Mimarisi': 'Modern Web Architecture',
+      'Ölçeklenebilirlik': 'Scalability',
+      'Yüksek Performans': 'High Performance',
+      'Önbellekleme': 'Caching',
+      'Veritabanı': 'Database',
+      'Mikroservisler': 'Microservices',
+      'Giriş': 'Introduction',
+      'Sonuç': 'Conclusion',
+      'Rehberi': 'Guide',
+      'Teknoloji': 'Technology',
+      'Yazılım': 'Software',
+      'Geliştirme': 'Development',
+      'Güvenlik': 'Security',
+      'Hakkımızda': 'About Us',
+      'Gizlilik Politikası': 'Privacy Policy',
+      'İletişim': 'Contact',
+    };
+
+    let translatedTitle = data.title;
+    let translatedExcerpt = data.excerpt || '';
+    let translatedContent = data.contentHtml;
+
+    if (data.from === 'tr' && data.to === 'en') {
+      for (const [tr, en] of Object.entries(dictionary)) {
+        const regex = new RegExp(tr, 'gi');
+        translatedTitle = translatedTitle.replace(regex, en);
+        translatedExcerpt = translatedExcerpt.replace(regex, en);
+        translatedContent = translatedContent.replace(regex, en);
+      }
+      translatedContent = translatedContent
+        .replace(/<h2>Giriş<\/h2>/gi, '<h2>Introduction</h2>')
+        .replace(/<h2>Sonuç<\/h2>/gi, '<h2>Conclusion</h2>');
+    }
+
+    const translatedSlug = slugify(translatedTitle);
+
+    return {
+      title: translatedTitle,
+      slug: translatedSlug,
+      excerpt: translatedExcerpt,
+      contentHtml: translatedContent,
+    };
   }
 }

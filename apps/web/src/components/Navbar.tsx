@@ -5,6 +5,7 @@ import { Link, usePathname, useRouter } from '../i18n/routing';
 import { useTranslations } from 'next-intl';
 import { Search, Globe, Menu, X } from 'lucide-react';
 import { SearchDialog } from './SearchDialog';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface NavbarProps {
   locale: string;
@@ -67,6 +68,9 @@ export const Navbar: React.FC<NavbarProps> = ({ locale }) => {
               <Globe className="w-3.5 h-3.5 text-indigo-500" />
               <span className="uppercase">{locale}</span>
             </button>
+
+            {/* Dark mode toggle */}
+            <ThemeToggle />
 
             {/* Mobile menu toggle */}
             <button

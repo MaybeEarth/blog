@@ -1,4 +1,4 @@
-import { PrismaClient, Role, PostStatus } from '@prisma/client';
+import { PrismaClient, Role, PostStatus, PageStatus } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient({
@@ -154,72 +154,129 @@ async function main() {
 
   if (postCount >= targetCount) {
     console.log(`ℹ️ Already has ${postCount} posts (target: ${targetCount}). Skipping bulk post creation.`);
-    return;
-  }
+  } else {
+    const needed = targetCount - postCount;
+    console.log(`🚀 Generating ${needed} multilingual posts in batches...`);
 
-  const needed = targetCount - postCount;
-  console.log(`🚀 Generating ${needed} multilingual posts in batches...`);
+    const batchSize = 100;
+    const now = Date.now();
 
-  const batchSize = 100;
-  const now = Date.now();
+    for (let i = 0; i < needed; i += batchSize) {
+      const currentBatch = Math.min(batchSize, needed - i);
+      const postCreations = [];
 
-  for (let i = 0; i < needed; i += batchSize) {
-    const currentBatch = Math.min(batchSize, needed - i);
-    const postCreations = [];
+      for (let j = 0; j < currentBatch; j++) {
+        const idx = postCount + i + j + 1;
+        const pubDate = new Date(now - (needed - (i + j)) * 3600 * 1000);
+        const cat = categories[idx % categories.length]!;
+        const tag = tags[idx % tags.length]!;
 
-    for (let j = 0; j < currentBatch; j++) {
-      const idx = postCount + i + j + 1;
-      const pubDate = new Date(now - (needed - (i + j)) * 3600 * 1000);
-      const cat = categories[idx % categories.length]!;
-      const tag = tags[idx % tags.length]!;
-
-      postCreations.push(
-        prisma.post.create({
-          data: {
-            authorId: admin.id,
-            status: PostStatus.PUBLISHED,
-            viewsCount: Math.floor(Math.random() * 5000),
-            publishedAt: pubDate,
-            categories: { create: [{ categoryId: cat.id }] },
-            tags: { create: [{ tagId: tag.id }] },
-            translations: {
-              create: [
-                {
-                  locale: 'tr',
-                  title: `Modern Web Mimarisi ve Ölçeklenebilirlik Rehberi #${idx}`,
-                  slug: `modern-web-mimarisi-ve-olceklenebilirlik-rehberi-${idx}`,
-                  excerpt: `Yüksek trafikli sistemlerde performans optimizasyonu ve mimari desenler #${idx}.`,
-                  contentHtml: `<h2>Giriş</h2><p>Bu makale #${idx}, modern web uygulamalarında PostgreSQL, Redis ve NestJS kullanarak nasıl yüksek throughput elde edileceğini detaylandırmaktadır.</p><p>Önbellekleme stratejileri ve keyset sayfalama veri tabanı yükünü minimize eder.</p>`,
-                  readingTimeMin: 4,
-                  status: PostStatus.PUBLISHED,
-                  publishedAt: pubDate,
-                  metaTitle: `Modern Web Mimarisi #${idx} | Blog`,
-                  metaDescription: `Ölçeklenebilir mimari ve yüksek performanslı backend teknikleri rehberi #${idx}.`,
-                },
-                {
-                  locale: 'en',
-                  title: `Modern Web Architecture & Scalability Guide #${idx}`,
-                  slug: `modern-web-architecture-and-scalability-guide-${idx}`,
-                  excerpt: `Performance optimization and architectural patterns in high-traffic systems #${idx}.`,
-                  contentHtml: `<h2>Introduction</h2><p>This article #${idx} explains how to achieve high throughput using PostgreSQL, Redis, and NestJS in modern web applications.</p><p>Caching strategies and keyset pagination minimize database load.</p>`,
-                  readingTimeMin: 4,
-                  status: PostStatus.PUBLISHED,
-                  publishedAt: pubDate,
-                  metaTitle: `Modern Web Architecture #${idx} | Blog`,
-                  metaDescription: `Guide to scalable architecture and high-performance backend techniques #${idx}.`,
-                },
-              ],
+        postCreations.push(
+          prisma.post.create({
+            data: {
+              authorId: admin.id,
+              status: PostStatus.PUBLISHED,
+              viewsCount: Math.floor(Math.random() * 5000),
+              publishedAt: pubDate,
+              categories: { create: [{ categoryId: cat.id }] },
+              tags: { create: [{ tagId: tag.id }] },
+              translations: {
+                create: [
+                  {
+                    locale: 'tr',
+                    title: `Modern Web Mimarisi ve Ölçeklenebilirlik Rehberi #${idx}`,
+                    slug: `modern-web-mimarisi-ve-olceklenebilirlik-rehberi-${idx}`,
+                    excerpt: `Yüksek trafikli sistemlerde performans optimizasyonu ve mimari desenler #${idx}.`,
+                    contentHtml: `<h2>Giriş</h2><p>Bu makale #${idx}, modern web uygulamalarında PostgreSQL, Redis ve NestJS kullanarak nasıl yüksek throughput elde edileceğini detaylandırmaktadır.</p><p>Önbellekleme stratejileri ve keyset sayfalama veri tabanı yükünü minimize eder.</p>`,
+                    readingTimeMin: 4,
+                    status: PostStatus.PUBLISHED,
+                    publishedAt: pubDate,
+                    metaTitle: `Modern Web Mimarisi #${idx} | Blog`,
+                    metaDescription: `Ölçeklenebilir mimari ve yüksek performanslı backend teknikleri rehberi #${idx}.`,
+                  },
+                  {
+                    locale: 'en',
+                    title: `Modern Web Architecture & Scalability Guide #${idx}`,
+                    slug: `modern-web-architecture-and-scalability-guide-${idx}`,
+                    excerpt: `Performance optimization and architectural patterns in high-traffic systems #${idx}.`,
+                    contentHtml: `<h2>Introduction</h2><p>This article #${idx} explains how to achieve high throughput using PostgreSQL, Redis, and NestJS in modern web applications.</p><p>Caching strategies and keyset pagination minimize database load.</p>`,
+                    readingTimeMin: 4,
+                    status: PostStatus.PUBLISHED,
+                    publishedAt: pubDate,
+                    metaTitle: `Modern Web Architecture #${idx} | Blog`,
+                    metaDescription: `Guide to scalable architecture and high-performance backend techniques #${idx}.`,
+                  },
+                ],
+              },
             },
-          },
-        }),
-      );
+          }),
+        );
+      }
+
+      await prisma.$transaction(postCreations);
+      process.stdout.write(`  Inserted ${i + currentBatch}/${needed} posts...\r`);
     }
 
-    await prisma.$transaction(postCreations);
-    process.stdout.write(`  Inserted ${i + currentBatch}/${needed} posts...\r`);
+    console.log(`\n✅ Successfully seeded ${needed} multilingual posts!`);
   }
 
-  console.log(`\n✅ Successfully seeded ${needed} multilingual posts!`);
+  // 6. Institutional Pages (Hakkımızda, Gizlilik, İletişim)
+  const existingPage = await prisma.page.findFirst();
+  if (!existingPage) {
+    console.log('📄 Seeding institutional pages...');
+    await prisma.page.create({
+      data: {
+        status: PageStatus.PUBLISHED,
+        translations: {
+          create: [
+            {
+              locale: 'tr',
+              title: 'Hakkımızda',
+              slug: 'hakkimizda',
+              contentHtml: '<h1>Hakkımızda</h1><p>TechBlog, yüksek performanslı, ölçeklenebilir ve bağımsız modern yazılım mimarileri üzerine teknik içerikler sunan özgür bir platformdur.</p><p>Sistemimiz tamamen öz-barındırma (self-hosted) prensipleriyle Vercel, AWS veya üçüncü parti SaaS kilitlenmelerinden bağımsız olarak çalışır.</p>',
+              metaTitle: 'Hakkımızda | TechBlog',
+              metaDescription: 'TechBlog hakkında bilgiler ve misyonumuz.',
+            },
+            {
+              locale: 'en',
+              title: 'About Us',
+              slug: 'about',
+              contentHtml: '<h1>About Us</h1><p>TechBlog is an independent, ultra-high-performance technical blog dedicated to modern software architecture, scalability, and engineering excellence.</p><p>Built strictly on self-hosted principles, free from SaaS vendor lock-in.</p>',
+              metaTitle: 'About Us | TechBlog',
+              metaDescription: 'Learn more about TechBlog and our engineering mission.',
+            },
+          ],
+        },
+      },
+    });
+
+    await prisma.page.create({
+      data: {
+        status: PageStatus.PUBLISHED,
+        translations: {
+          create: [
+            {
+              locale: 'tr',
+              title: 'Gizlilik Politikası',
+              slug: 'gizlilik-politikasi',
+              contentHtml: '<h1>Gizlilik Politikası</h1><p>TechBlog olarak gizliliğinize büyük önem veriyoruz. Sitemizde üçüncü parti takipçiler veya izinsiz çerezler kullanılmaz.</p><p>Analitik verileri tamamen anonimleştirilmiş IP hash yöntemiyle kendi sunucumuzda saklanır.</p>',
+              metaTitle: 'Gizlilik Politikası | TechBlog',
+              metaDescription: 'Kişisel veri koruma ve gizlilik ilkelerimiz.',
+            },
+            {
+              locale: 'en',
+              title: 'Privacy Policy',
+              slug: 'privacy-policy',
+              contentHtml: '<h1>Privacy Policy</h1><p>At TechBlog, we value your privacy. We do not use third-party invasive trackers or unnecessary cookies.</p><p>All metrics are gathered anonymously and processed strictly on self-hosted infrastructure.</p>',
+              metaTitle: 'Privacy Policy | TechBlog',
+              metaDescription: 'Our commitment to data privacy and minimal tracking.',
+            },
+          ],
+        },
+      },
+    });
+    console.log('✅ Institutional pages seeded successfully!');
+  }
 }
 
 main()

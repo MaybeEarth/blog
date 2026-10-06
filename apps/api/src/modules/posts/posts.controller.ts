@@ -93,4 +93,39 @@ export class PostsController {
   async deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(id);
   }
+
+  @Get(':id/translations/:locale/revisions')
+  @Roles(Role.ADMIN, Role.EDITOR)
+  async getRevisions(
+    @Param('id') postId: string,
+    @Param('locale') locale: string,
+  ) {
+    return this.postsService.getRevisions(postId, locale);
+  }
+
+  @Post(':id/translations/:locale/revisions/:revisionId/rollback')
+  @Roles(Role.ADMIN, Role.EDITOR)
+  async rollbackRevision(
+    @Param('id') postId: string,
+    @Param('locale') locale: string,
+    @Param('revisionId') revisionId: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.postsService.rollbackRevision(postId, locale, revisionId, user.sub);
+  }
+
+  @Post('translate-draft')
+  @Roles(Role.ADMIN, Role.EDITOR)
+  async translateDraft(
+    @Body()
+    body: {
+      title: string;
+      excerpt?: string;
+      contentHtml: string;
+      from: string;
+      to: string;
+    },
+  ) {
+    return this.postsService.translateDraft(body);
+  }
 }

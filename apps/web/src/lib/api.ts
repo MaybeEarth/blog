@@ -148,4 +148,22 @@ export const webApi = {
       // Beacon errors ignored
     }
   },
+
+  getPageBySlug: async (
+    locale: string,
+    slug: string,
+  ): Promise<{
+    id: string;
+    locale: string;
+    title: string;
+    slug: string;
+    contentHtml: string;
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    alternates: Array<{ locale: string; slug: string; title: string }>;
+  } | null> => {
+    return fetchApi(`/pages/${locale}/${slug}`, {
+      next: { tags: [`pages:${locale}:${slug}`], revalidate: 3600 },
+    });
+  },
 };

@@ -59,4 +59,50 @@ export const postsApi = {
       method: 'DELETE',
     });
   },
+
+  getRevisions: async (
+    postId: string,
+    locale: string,
+  ): Promise<
+    Array<{
+      id: string;
+      title: string;
+      createdAt: string;
+      editor?: { displayName: string };
+    }>
+  > => {
+    return apiClient(
+      `/posts/${postId}/translations/${locale}/revisions`,
+    );
+  },
+
+  rollbackRevision: async (
+    postId: string,
+    locale: string,
+    revisionId: string,
+  ): Promise<{ success: boolean; message: string }> => {
+    return apiClient(
+      `/posts/${postId}/translations/${locale}/revisions/${revisionId}/rollback`,
+      { method: 'POST' },
+    );
+  },
+
+  translateDraft: async (data: {
+    title: string;
+    excerpt?: string;
+    contentHtml: string;
+    from: string;
+    to: string;
+  }): Promise<{
+    title: string;
+    slug: string;
+    excerpt: string;
+    contentHtml: string;
+  }> => {
+    return apiClient('/posts/translate-draft', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
 };
+

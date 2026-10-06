@@ -106,10 +106,40 @@ export const PostEditPage: React.FC = () => {
   const handleTitleChange = (newTitle: string) => {
     updateCurrentTrans({
       title: newTitle,
-      // If slug is empty or matches slugified old title, auto-update slug
       slug: slugify(newTitle),
       metaTitle: newTitle,
     });
+  };
+
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const handleTranslateFromTr = async () => {
+    const trData = translations['tr'];
+    if (!trData?.title && !trData?.contentHtml) {
+      alert('Lütfen önce Türkçe sekmesinde bir başlık veya içerik girin.');
+      return;
+    }
+    setIsTranslating(true);
+    try {
+      const draft = await postsApi.translateDraft({
+        title: trData.title || '',
+        excerpt: trData.excerpt || undefined,
+        contentHtml: trData.contentHtml || '',
+        from: 'tr',
+        to: 'en',
+      });
+      updateCurrentTrans({
+        title: draft.title,
+        slug: draft.slug,
+        excerpt: draft.excerpt,
+        contentHtml: draft.contentHtml,
+        metaTitle: draft.title,
+      });
+    } catch {
+      alert('Taslak çeviri üretilirken hata oluştu.');
+    } finally {
+      setIsTranslating(false);
+    }
   };
 
   // Save translation mutation
@@ -232,6 +262,18 @@ export const PostEditPage: React.FC = () => {
               <span className="text-[10px] uppercase opacity-70">({lang.code})</span>
             </button>
           ),
+        )}
+
+        {activeTab === 'en' && (
+          <button
+            type="button"
+            onClick={handleTranslateFromTr}
+            disabled={isTranslating}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50/80 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900/50 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <span>{isTranslating ? 'Çevriliyor...' : 'TR\'den Çeviri Taslağı Üret (AI)'}</span>
+          </button>
         )}
       </div>
 
