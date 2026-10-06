@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Modal } from '../common/Modal';
 import { MediaUploader } from './MediaUploader';
 import { mediaApi } from '../../api/media.api';
-import { MediaItemDto } from '@blog/shared';
+import { type MediaItemDto } from '@blog/shared';
 import { Loader2, Check } from 'lucide-react';
 import { Button } from '../common/Button';
 

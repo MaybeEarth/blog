@@ -1,10 +1,10 @@
 import { apiClient } from './client';
 import {
-  RequestPresignedUrlInput,
-  PresignedUploadResponse,
-  MediaQueryInput,
-  MediaItemDto,
-  UpdateMediaTranslationInput,
+  type RequestPresignedUrlInput,
+  type PresignedUploadResponse,
+  type MediaQueryInput,
+  type MediaItemDto,
+  type UpdateMediaTranslationInput,
 } from '@blog/shared';
 
 export interface PaginatedMediaResponse {

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { TagDto, UpsertTagInput } from '@blog/shared';
+import { type TagDto, type UpsertTagInput } from '@blog/shared';
 
 export const tagsApi = {
   getAll: async (locale = 'tr'): Promise<TagDto[]> => {

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UserProfile, LoginInput } from '@blog/shared';
+import { type UserProfile, type LoginInput } from '@blog/shared';
 import { authApi } from '../api/auth.api';
 import { configureApiClient } from '../api/client';
 

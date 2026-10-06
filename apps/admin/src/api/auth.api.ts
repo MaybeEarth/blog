@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { LoginInput, UserProfile } from '@blog/shared';
+import { type LoginInput, type UserProfile } from '@blog/shared';
 
 export interface LoginResponse {
   accessToken: string;

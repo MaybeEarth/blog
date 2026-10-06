@@ -10,7 +10,7 @@ import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { SeoPreview } from '../components/posts/SeoPreview';
 import { MediaLibraryModal } from '../components/media/MediaLibraryModal';
-import { MediaItemDto } from '@blog/shared';
+import { type MediaItemDto } from '@blog/shared';
 import {
   Save,
   Globe,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mediaApi } from '../api/media.api';
-import { MediaItemDto } from '@blog/shared';
+import { type MediaItemDto } from '@blog/shared';
 import { useUiStore } from '../stores/ui.store';
 import { MediaUploader } from '../components/media/MediaUploader';
 import { Modal } from '../components/common/Modal';

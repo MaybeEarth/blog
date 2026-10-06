@@ -1,11 +1,11 @@
 import { apiClient } from './client';
 import {
-  PostQueryInput,
-  CursorPaginatedResponse,
-  PostListItem,
-  PostDetailItem,
-  CreatePostInput,
-  UpsertTranslationInput,
+  type PostQueryInput,
+  type CursorPaginatedResponse,
+  type PostListItem,
+  type PostDetailItem,
+  type CreatePostInput,
+  type UpsertTranslationInput,
 } from '@blog/shared';
 
 export const postsApi = {

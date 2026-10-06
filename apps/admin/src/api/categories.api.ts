@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { CategoryDto } from '@blog/shared';
+import { type CategoryDto } from '@blog/shared';
 
 export const categoriesApi = {
   getAll: async (locale = 'tr'): Promise<CategoryDto[]> => {
