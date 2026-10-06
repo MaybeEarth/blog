@@ -202,6 +202,9 @@ importers:
       '@blog/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      lucide-react:
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.3.0)
       next:
         specifier: ^15.1.7
         version: 15.5.27(@types/node@22.20.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

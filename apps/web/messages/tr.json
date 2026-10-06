@@ -1,0 +1,32 @@
+{
+  "common": {
+    "siteTitle": "Blog",
+    "siteDescription": "Yüksek performanslı, modern web teknolojileri ve yazılım mimarisi blogu.",
+    "search": "Yazılarda ara...",
+    "readTime": "dk okuma",
+    "views": "okunma",
+    "publishedOn": "Yayınlanma tarihi",
+    "categories": "Kategoriler",
+    "tags": "Etiketler",
+    "allPosts": "Tüm Yazılar",
+    "featured": "Öne Çıkan",
+    "relatedPosts": "Benzer Yazılar",
+    "backToHome": "Ana Sayfaya Dön",
+    "share": "Paylaş",
+    "copied": "Bağlantı kopyalandı!",
+    "noPostsFound": "Henüz bu kriterlere uygun yazı bulunamadı.",
+    "loadMore": "Daha Fazla Göster",
+    "readingTime": "{minutes} dk okuma"
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "categories": "Kategoriler",
+    "tags": "Etiketler",
+    "search": "Ara",
+    "admin": "Yönetim"
+  },
+  "footer": {
+    "about": "Modern, tam bağımsız ve yüksek performanslı blog platformu.",
+    "rights": "Tüm hakları saklıdır."
+  }
+}

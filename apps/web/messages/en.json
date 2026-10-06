@@ -1,0 +1,32 @@
+{
+  "common": {
+    "siteTitle": "Blog",
+    "siteDescription": "High-performance blog on modern web architecture and software engineering.",
+    "search": "Search articles...",
+    "readTime": "min read",
+    "views": "views",
+    "publishedOn": "Published on",
+    "categories": "Categories",
+    "tags": "Tags",
+    "allPosts": "All Articles",
+    "featured": "Featured",
+    "relatedPosts": "Related Articles",
+    "backToHome": "Back to Home",
+    "share": "Share",
+    "copied": "Link copied!",
+    "noPostsFound": "No articles found matching these criteria.",
+    "loadMore": "Load More",
+    "readingTime": "{minutes} min read"
+  },
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "tags": "Tags",
+    "search": "Search",
+    "admin": "Admin"
+  },
+  "footer": {
+    "about": "Modern, fully independent, and high-performance blog platform.",
+    "rights": "All rights reserved."
+  }
+}
