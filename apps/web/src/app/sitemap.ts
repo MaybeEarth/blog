@@ -34,8 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Türkçe ve İngilizce tüm yazıları çek
   const [trPosts, enPosts] = await Promise.all([
-    webApi.getPosts('tr', { limit: 100 }),
-    webApi.getPosts('en', { limit: 100 }),
+    webApi.getPosts('tr', { limit: 50 }),
+    webApi.getPosts('en', { limit: 50 }),
   ]);
 
   if (trPosts?.items) {
