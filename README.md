@@ -1,6 +1,9 @@
 # 🚀 Ultra-High Performance Multilingual Blog Engine
 
 <p align="center">
+  <a href="https://github.com/MaybeEarth/blog/actions/workflows/ci.yml">
+    <img src="https://github.com/MaybeEarth/blog/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
   <img src="https://img.shields.io/badge/Next.js-15.1-black?style=for-the-badge&logo=next.js" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
   <img src="https://img.shields.io/badge/NestJS-Fastify-E0234E?style=for-the-badge&logo=nestjs" alt="NestJS Fastify" />
