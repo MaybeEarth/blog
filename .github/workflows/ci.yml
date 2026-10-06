@@ -60,7 +60,7 @@ jobs:
           SEED_POSTS_PER_LOCALE: 10
         run: |
           pnpm --filter @blog/api prisma:generate
-          pnpm --filter @blog/api exec prisma db push --skip-generate
+          pnpm --filter @blog/api db:migrate
           pnpm --filter @blog/api db:seed
 
       - name: Lint
